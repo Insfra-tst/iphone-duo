@@ -4,8 +4,8 @@ cd "$(dirname "$0")/.."
 mkdir -p build dist
 xcodebuild -version
 xcodegen generate
-if ! grep -Fq 'preview/index.html' DuoWebApp.xcodeproj/project.pbxproj; then
-  echo 'XcodeGen did not add preview/index.html to the generated project.' >&2
+if ! grep -Fq 'index.html' DuoWebApp.xcodeproj/project.pbxproj; then
+  echo 'XcodeGen did not add index.html to the generated project.' >&2
   exit 1
 fi
 xcodebuild -project DuoWebApp.xcodeproj -scheme DuoWebApp \
