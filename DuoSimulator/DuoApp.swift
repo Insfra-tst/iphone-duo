@@ -3,7 +3,7 @@ import SwiftUI
 @main
 struct DuoApp: App {
     var body: some Scene {
-        WindowGroup { DuoView().preferredColorScheme(.dark) }
+        WindowGroup { DuoView().preferredColorScheme(.light) }
     }
 }
 
@@ -42,25 +42,6 @@ struct DuoView: View {
         GeometryReader { geometry in
             let sideBySide = layout == 2 || (layout == 0 && geometry.size.width > geometry.size.height)
             VStack(spacing: 12) {
-                HStack {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("DUO").font(.system(size: 25, weight: .black, design: .rounded)).tracking(5)
-                        Text("TWO SCREENS. YOUR SPACE.").font(.system(size: 9, weight: .semibold)).foregroundColor(.gray)
-                    }
-                    Spacer()
-                    Button { showHelp = true } label: {
-                        Image(systemName: "info.circle").font(.title3).frame(width: 44, height: 44)
-                    }.accessibilityLabel("About Duo")
-                    Button { withAnimation(.easeInOut(duration: 0.25)) { folded.toggle() } } label: {
-                        Image(systemName: folded ? "rectangle.expand.vertical" : "rectangle.compress.vertical")
-                            .font(.title3).frame(width: 44, height: 44)
-                    }.accessibilityLabel(folded ? "Unfold second screen" : "Fold second screen")
-                }
-                Picker("Screen layout", selection: $layout) {
-                    Text("Auto").tag(0)
-                    Text("Stack").tag(1)
-                    Text("Side by side").tag(2)
-                }.pickerStyle(.segmented)
                 if sideBySide {
                     HStack(spacing: 5) {
                         panel(number: 1, app: $left, calculator: leftCalculator)
@@ -91,7 +72,7 @@ struct DuoView: View {
             .padding(12)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
-        .background(Color(red: 0.025, green: 0.035, blue: 0.055).ignoresSafeArea())
+        .background(Color(red: 0.93, green: 0.95, blue: 0.98).ignoresSafeArea())
         .sheet(isPresented: $showHelp) {
             VStack(alignment: .leading, spacing: 22) {
                 Text("Meet Duo").font(.largeTitle.bold())
@@ -109,15 +90,30 @@ struct DuoView: View {
     private func panel(number: Int, app: Binding<DemoApp>, calculator: CalculatorStore) -> some View {
         PanelView(number: number, selected: app, calculator: calculator)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .background(Color(red: 0.075, green: 0.09, blue: 0.13))
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 22))
-            .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.white.opacity(0.18), lineWidth: 2))
+            .overlay(RoundedRectangle(cornerRadius: 22).stroke(Color.black.opacity(0.10), lineWidth: 2))
     }
 
     private func hinge(vertical: Bool) -> some View {
-        Capsule().fill(Color.white.opacity(0.25))
-            .frame(width: vertical ? 5 : 65, height: vertical ? 65 : 5)
-            .accessibilityHidden(true)
+        ZStack {
+            Capsule().fill(LinearGradient(colors: [.gray.opacity(0.65), .white, .gray.opacity(0.65)],
+                                          startPoint: vertical ? .leading : .top,
+                                          endPoint: vertical ? .trailing : .bottom))
+            Image(systemName: vertical ? "chevron.left.chevron.right" : "chevron.up.chevron.down")
+                .font(.system(size: 9, weight: .bold)).foregroundColor(.secondary)
+                .padding(6).background(.white).clipShape(Capsule())
+                .overlay(Capsule().stroke(Color.gray.opacity(0.35)))
+        }
+        .frame(width: vertical ? 11 : 82, height: vertical ? 82 : 11)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            withAnimation(.spring(response: 0.45, dampingFraction: 0.78)) {
+                angle = angle < 30 ? 65 : 0
+            }
+        }
+        .accessibilityLabel(angle < 30 ? "Fold second screen" : "Unfold second screen")
+        .accessibilityAddTraits(.isButton)
     }
 }
 
@@ -139,8 +135,8 @@ struct PanelView: View {
                 } label: {
                     Image(systemName: "square.grid.2x2").frame(width: 44, height: 36)
                 }.accessibilityLabel("Choose app on screen \(number)")
-            }.foregroundColor(.white.opacity(0.7)).padding(.horizontal, 14)
-            Divider().overlay(Color.white.opacity(0.08))
+            }.foregroundColor(.secondary).padding(.horizontal, 14)
+            Divider().overlay(Color.black.opacity(0.08))
             Group {
                 switch selected {
                 case .home: home
@@ -152,7 +148,7 @@ struct PanelView: View {
             if selected != .home {
                 Button { selected = .home } label: {
                     Label("Home", systemImage: "house.fill").font(.caption).frame(maxWidth: .infinity, minHeight: 36)
-                }.foregroundColor(.white.opacity(0.65))
+                }.foregroundColor(.secondary)
             }
         }
     }
@@ -163,23 +159,31 @@ struct PanelView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(number == 1 ? "Make room" : "For more.")
                         .font(.system(size: 28, weight: .bold, design: .rounded)).minimumScaleFactor(0.7)
-                    Text("One idea. Two perspectives.").font(.caption).foregroundColor(.white.opacity(0.6))
+                    Text("One idea. Two perspectives.").font(.caption).foregroundColor(.secondary)
                 }.padding(.top, 4)
-                ForEach([DemoApp.notes, .calculator, .clock]) { app in
-                    Button { selected = app } label: {
-                        HStack(spacing: 10) {
-                            Image(systemName: app.icon).font(.title3).frame(width: 36, height: 36)
-                                .background(app.tint.opacity(0.15)).clipShape(RoundedRectangle(cornerRadius: 10))
-                            Text(app.rawValue).font(.subheadline.weight(.semibold))
-                            Spacer(minLength: 0)
-                            Image(systemName: "chevron.right").font(.caption2)
-                        }.foregroundColor(app.tint).padding(8)
-                            .background(Color.white.opacity(0.035)).clipShape(RoundedRectangle(cornerRadius: 14))
-                    }.buttonStyle(.plain)
+                LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 14), count: 4), spacing: 18) {
+                    homeIcon("Messages", "message.fill", .green)
+                    homeIcon("Safari", "safari.fill", .blue)
+                    homeIcon("Photos", "photo.fill", .orange)
+                    homeIcon("Camera", "camera.fill", .gray)
+                    homeIcon("Music", "music.note", .pink)
+                    homeIcon("Notes", DemoApp.notes.icon, DemoApp.notes.tint) { selected = .notes }
+                    homeIcon("Calculator", DemoApp.calculator.icon, DemoApp.calculator.tint) { selected = .calculator }
+                    homeIcon("Clock", DemoApp.clock.icon, DemoApp.clock.tint) { selected = .clock }
                 }
             }.padding(16)
         }
-        .background(LinearGradient(colors: [number == 1 ? Color.cyan.opacity(0.16) : Color.purple.opacity(0.2), .clear], startPoint: .topLeading, endPoint: .bottomTrailing))
+        .background(LinearGradient(colors: [number == 1 ? Color.cyan.opacity(0.18) : Color.purple.opacity(0.18), .white], startPoint: .topLeading, endPoint: .bottomTrailing))
+    }
+
+    private func homeIcon(_ title: String, _ symbol: String, _ color: Color, action: (() -> Void)? = nil) -> some View {
+        Button { action?() } label: {
+            VStack(spacing: 5) {
+                Image(systemName: symbol).font(.title3).foregroundColor(.white)
+                    .frame(width: 48, height: 48).background(color).clipShape(RoundedRectangle(cornerRadius: 13))
+                Text(title).font(.system(size: 9, weight: .medium)).foregroundColor(.secondary)
+            }.frame(maxWidth: .infinity)
+        }.buttonStyle(.plain).disabled(action == nil)
     }
 }
 
