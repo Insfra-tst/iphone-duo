@@ -10,7 +10,7 @@ with zipfile.ZipFile(sys.argv[1]) as archive:
     assert info['CFBundleIdentifier'] == 'com.insfratst.iphoneduo'
     assert info['CFBundlePackageType'] == 'APPL'
     assert info['CFBundleSupportedPlatforms'] == ['iPhoneOS']
-    assert info['UIDeviceFamily'] == [1], 'Expected an iPhone app'
+    assert info['UIDeviceFamily'] == [1], f"Expected iPhone-only UIDeviceFamily [1], got {info.get('UIDeviceFamily')}"
     assert info['MinimumOSVersion'] == '15.0'
     executable = archive.read(root + info['CFBundleExecutable'])
     magic, cpu = struct.unpack_from('<II', executable)

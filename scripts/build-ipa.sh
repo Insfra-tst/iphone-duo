@@ -6,7 +6,7 @@ xcodebuild -version
 xcodegen generate
 xcodebuild -project DuoSimulator.xcodeproj -scheme DuoSimulator \
   -configuration Release -sdk iphoneos -destination 'generic/platform=iOS' \
-  -derivedDataPath build/DerivedData CODE_SIGNING_ALLOWED=NO \
+  -derivedDataPath build/DerivedData TARGETED_DEVICE_FAMILY=1 CODE_SIGNING_ALLOWED=NO \
   CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY='' build 2>&1 | tee build/xcodebuild.log
 app='build/DerivedData/Build/Products/Release-iphoneos/DuoSimulator.app'
 test -f "$app/DuoSimulator"
