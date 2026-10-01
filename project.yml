@@ -10,9 +10,10 @@ targets:
   DuoWebApp:
     type: application
     platform: iOS
-    sources: [DuoSimulator]
-    resources:
+    sources:
+      - path: DuoSimulator
       - path: preview/index.html
+        buildPhase: resources
     info:
       path: build/Info.plist
       properties:
