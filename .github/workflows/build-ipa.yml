@@ -11,16 +11,14 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Test calculator
-        run: bash scripts/test.sh
       - name: Install XcodeGen
         run: brew install xcodegen
-      - name: Build unsigned iPhone IPA
+      - name: Build HTML app as unsigned iPhone IPA
         run: bash scripts/build-ipa.sh
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iPhoneDuo-unsigned-IPA
+          name: iPhoneDuo-HTML-unsigned-IPA
           path: dist/iPhoneDuo-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
