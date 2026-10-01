@@ -1,0 +1,36 @@
+name: DuoSimulator
+options:
+  deploymentTarget:
+    iOS: '15.0'
+settings:
+  base:
+    SWIFT_VERSION: '5.0'
+    CODE_SIGNING_ALLOWED: NO
+    TARGETED_DEVICE_FAMILY: '1'
+targets:
+  DuoSimulator:
+    type: application
+    platform: iOS
+    sources: [DuoSimulator]
+    info:
+      path: build/Info.plist
+      properties:
+        CFBundleDisplayName: iPhone Duo
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UIRequiresFullScreen: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.insfratst.iphoneduo
+        PRODUCT_NAME: DuoSimulator
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        MARKETING_VERSION: '1.0.0'
+        CURRENT_PROJECT_VERSION: '1'
+schemes:
+  DuoSimulator:
+    build:
+      targets:
+        DuoSimulator: all

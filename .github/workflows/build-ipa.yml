@@ -1,0 +1,34 @@
+name: Build IPA
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: macos-15
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Test calculator
+        run: bash scripts/test.sh
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Build unsigned iPhone IPA
+        run: bash scripts/build-ipa.sh
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: iPhoneDuo-unsigned-IPA
+          path: dist/iPhoneDuo-unsigned.ipa
+          if-no-files-found: error
+          retention-days: 14
+      - name: Upload build log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-log
+          path: build/xcodebuild.log
+          if-no-files-found: ignore
+          retention-days: 14
