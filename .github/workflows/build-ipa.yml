@@ -18,8 +18,8 @@ jobs:
       - name: Upload IPA
         uses: actions/upload-artifact@v4
         with:
-          name: iPhoneDuo-HTML-unsigned-IPA
-          path: dist/iPhoneDuo-unsigned.ipa
+          name: AI-Mobile-OS-unsigned-IPA
+          path: dist/AIMobileOS-unsigned.ipa
           if-no-files-found: error
           retention-days: 14
       - name: Upload build log

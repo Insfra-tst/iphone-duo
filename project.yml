@@ -1,4 +1,4 @@
-name: DuoWebApp
+name: AIMobileOS
 options:
   deploymentTarget:
     iOS: '15.0'
@@ -7,17 +7,18 @@ settings:
     SWIFT_VERSION: '5.0'
     CODE_SIGNING_ALLOWED: NO
 targets:
-  DuoWebApp:
+  AIMobileOS:
     type: application
     platform: iOS
     sources:
-      - path: DuoSimulator
-      - path: preview/index.html
+      - path: MobileOS
+      - path: web
+        type: folder
         buildPhase: resources
     info:
       path: build/Info.plist
       properties:
-        CFBundleDisplayName: iPhone Duo
+        CFBundleDisplayName: AI Mobile OS
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
@@ -27,13 +28,13 @@ targets:
     settings:
       base:
         TARGETED_DEVICE_FAMILY: '1'
-        PRODUCT_BUNDLE_IDENTIFIER: com.insfratst.iphoneduo
-        PRODUCT_NAME: DuoWebApp
+        PRODUCT_BUNDLE_IDENTIFIER: com.insfratst.aimobileos
+        PRODUCT_NAME: AIMobileOS
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         MARKETING_VERSION: '1.0.0'
         CURRENT_PROJECT_VERSION: '1'
 schemes:
-  DuoWebApp:
+  AIMobileOS:
     build:
       targets:
-        DuoWebApp: all
+        AIMobileOS: all

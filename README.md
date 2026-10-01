@@ -1,49 +1,32 @@
-# iPhone Duo HTML app
+# AI Mobile OS iPhone app
 
-This project packages the interactive Duo HTML interface as an offline iPhone app. A small native WKWebView shell loads `preview/index.html` from inside the IPA. It does not need a server or internet connection after installation.
+This repository packages the `Experiment` AI Mobile OS web app as an offline iPhone app. The native SwiftUI shell opens its bundled HTML, CSS, JavaScript, icons, and app-store data in a WKWebView. The project targets iPhones on iOS 15 or later and can be built in GitHub Actions without Xcode on your computer.
 
-The app has two virtual iPhone panels, home screen icons, app demos, notes, calculator, clock, and a hinge you can tap to fold/unfold or drag for a partial fold. It runs on regular iPhones with iOS 15 or newer.
+The shell serves local files on a private in-app URL scheme so browser storage and the local app catalog work without a web server. Built-in demo apps run locally. Links and hosted pages need internet. AI features that call OpenAI require a valid API key entered/configured by the user; no key is included in this project.
 
-## Push to GitHub and build the IPA
+## Build and install
 
-Open Terminal and run:
+Push the repository to `main` or run **Build IPA** manually from [GitHub Actions](https://github.com/Insfra-tst/iphone-duo/actions). Download the `AI-Mobile-OS-unsigned-IPA` artifact, extract the ZIP, then sign and install `AIMobileOS-unsigned.ipa` with iloader, SideStore, or another compatible sideloading tool. The IPA is unsigned because it is built without an Apple developer signing certificate.
 
 ```bash
-cd "/Users/kosala/Documents/Codex/Jailbreak/IPA Creation/iPhoneDuo"
-git status --short
 git add -A
-git commit -m "Package Duo HTML app as an iPhone IPA"
+git commit -m "Package AI Mobile OS as an iPhone app"
 git push origin main
 ```
 
-The `git add -A` replaces the old SwiftUI game/demo implementation in the next commit with the HTML app and its native WebKit wrapper. The existing Git history stays in place. Check `git status --short` first; this project folder is its own repository and its origin must be `https://github.com/Insfra-tst/iphone-duo.git`.
-
-If Git says there is nothing to commit, check the GitHub Actions page for the latest run. If HTTPS requests a password, use a GitHub personal access token with write access to repository contents and workflow files. Do not put a token in this folder or in the remote URL.
-
-GitHub Actions uses its macOS runner and Xcode to build an unsigned iPhone IPA. No Xcode installation or Apple signing credentials are needed on this computer.
-
-1. Visit [GitHub Actions](https://github.com/Insfra-tst/iphone-duo/actions) after pushing.
-2. Open the latest **Build IPA** run and wait for success.
-3. Download **iPhoneDuo-HTML-unsigned-IPA** from **Artifacts**.
-4. Extract that ZIP once to get `iPhoneDuo-unsigned.ipa`.
-5. Install it with iloader or another installer that signs unsigned IPAs for your iPhone.
-
-Build artifacts expire after 14 days. The workflow also uploads the Xcode build log when a run fails. Open the log and find the first `error:` line for a compiler failure.
-
-## Project files
-
-- `preview/index.html` is the HTML, CSS, and JavaScript app. It also works as a browser preview from a local web server.
-- `DuoSimulator/DuoWebApp.swift` opens that bundled page in WKWebView.
-- `DuoSimulator/Assets.xcassets` contains the app icon.
-- `project.yml` configures an iPhone-only Xcode app target.
-- `scripts/build-ipa.sh` creates an unsigned device IPA.
-- `scripts/verify-ipa.py` checks the archive, iPhone-only metadata, ARM64 app binary, bundled HTML and icon assets.
-- `.github/workflows/build-ipa.yml` builds and uploads the artifact.
-
-For a local browser preview on macOS, run:
+## Local preview
 
 ```bash
-python3 -m http.server 8766 --directory preview
+python3 -m http.server 8766 --directory web
 ```
 
-Then visit [http://localhost:8766](http://localhost:8766). The native IPA embeds the same HTML file, so the preview and installed app share the Duo interface source.
+Then open http://localhost:8766. The same `web` folder is embedded in the IPA.
+
+## Build files
+
+- `web/` contains the experiment app and its bundled runtime data.
+- `MobileOS/` contains the SwiftUI/WebKit shell and iPhone app icon.
+- `project.yml` defines the iPhone-only XcodeGen project.
+- `scripts/build-ipa.sh` builds and packages an unsigned IPA.
+- `scripts/verify-ipa.py` validates the IPA structure and embedded app resources.
+- `.github/workflows/build-ipa.yml` builds the app on GitHub Actions macOS runners.
